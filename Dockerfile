@@ -1,20 +1,19 @@
-# ────────────────────────────────
-# n8n 1.92.2 — Railway edition
-# ────────────────────────────────
 FROM n8nio/n8n:1.92.2
 
-# Optional utilities
+# Install optional utilities
 RUN apk add --no-cache graphicsmagick tzdata
 
-# Run as root (Railway’s default container UID)
-USER root
-
-# Persist data (workflows, creds, etc.)
+# Set working directory for persistent data
 WORKDIR /data
 
-# Railway passes the port via $PORT
-EXPOSE $PORT
-ENV N8N_PORT=$PORT \
+# Run as root (Railway defaults)
+USER root
+
+# Expose Railway’s assigned port
+ENV N8N_PORT=${PORT} \
     N8N_USER_ID=root
 
+EXPOSE ${PORT}
+
+# Start n8n
 CMD ["n8n", "start"]
