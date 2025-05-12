@@ -1,17 +1,22 @@
+# ───────────────────────────────────────────────────────────────
+# n8n 1.92.2 for Railway
+# ───────────────────────────────────────────────────────────────
 FROM n8nio/n8n:1.92.2
 
-RUN apk add --update graphicsmagick tzdata
+# Optional utilities you asked for
+RUN apk add --no-cache graphicsmagick tzdata
 
+# Run n8n as root inside Railway’s container
 USER root
 
-RUN apk --update add --virtual build-dependencies python3 build-base && \
-    npm_config_user=root npm install --location=global n8n@${N8N_VERSION} && \
-    apk del build-dependencies
-
-WORKDIR /data
-
+# Railway sets $PORT automatically; expose it so health checks succeed
 EXPOSE $PORT
 
-ENV N8N_USER_ID=root
+# Persist workflows, credentials, etc.
+WORKDIR /data
 
-CMD export N8N_PORT=$PORT && n8n start
+# n8n listens on the same $PORT Railway hands us
+ENV N8N_PORT=$PORT \
+    N8N_USER_ID=root
+
+CMD ["n8n", "start"]
